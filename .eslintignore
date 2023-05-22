@@ -1,0 +1,6 @@
+.eslintrc.js
+tailwind.config.js
+jest.config.js
+postcss.config.js
+remix.config.js
+**.typegen.ts
