@@ -1,0 +1,18 @@
+{
+  "me": [
+    {
+      "source": "imported",
+      "chain": "SOL",
+      "address": "26XiuWDmXpj4btMCN8qJLM2Thik4BVU7VfA5orAUgQEF"
+    },
+    {
+      "iteration": 0,
+      "source": "generated",
+      "addresses": {
+        "SOL": "CR9gKkHk4HhESuC2gPiJ9pd3QBZLBZor1mwq83eMdDyd",
+        "ETH": "0x761e41a7010114e6b600F20F1e778171d3Cb0f9e",
+        "MATIC": "0x761e41a7010114e6b600F20F1e778171d3Cb0f9e"
+      }
+    }
+  ]
+}
