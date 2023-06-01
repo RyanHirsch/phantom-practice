@@ -27,7 +27,11 @@ export default function WalletsIndexPage() {
     <>
       <ul>
         {wallets.map((w) => (
-          <li key={getDisplayName(w)}>{getDisplayName(w)}</li>
+          <li key={getDisplayName(w)}>
+            <Link to={`${w.source === "imported" ? w.address : w.addresses.SOL}`}>
+              {getDisplayName(w)}
+            </Link>
+          </li>
         ))}
       </ul>
       <Link

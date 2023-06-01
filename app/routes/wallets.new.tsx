@@ -1,11 +1,10 @@
-import { Form, useOutletContext } from "@remix-run/react";
+import { Form } from "@remix-run/react";
 import classNames from "classnames";
 import { ActionArgs, redirect } from "@remix-run/node";
 
 import { badRequest } from "~/utils/request.server";
 import { createWallet, getWallets } from "~/utils/flat-db.server";
 
-import { WalletContext } from "./wallets/route";
 import { Wallet } from "./wallets/types";
 
 function validateWalletName(name: string, existingNames: string[]) {
@@ -55,7 +54,8 @@ export async function action({ request }: ActionArgs) {
 }
 
 export default function NewWalletRoute() {
-  const { wallets } = useOutletContext<WalletContext>();
+  // plan to use for client side wallet name error handling
+  // const { wallets } = useOutletContext<WalletContext>();
 
   return (
     <Form className="flex flex-col space-y-4 w-full" method="POST">
