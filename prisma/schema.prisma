@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id      BigInt   @id @default(autoincrement())
+  email   String   @unique
+  name    String?
+  wallets Wallet[]
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime  @default(now()) @map("updated_at") @db.Timestamptz()
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz()
+
+  @@map("user")
+}
+
+model Wallet {
+  id      BigInt               @id @default(autoincrement())
+  name    String?
+  address AddressesInWallets[]
+  owner   User                 @relation(fields: [ownerId], references: [id])
+  ownerId BigInt               @map("owner_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime  @default(now()) @map("updated_at") @db.Timestamptz()
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz()
+
+  @@map("wallet")
+}
+
+model Address {
+  id      String               @id
+  chain   String
+  balance Float
+  wallets AddressesInWallets[]
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime  @default(now()) @map("updated_at") @db.Timestamptz()
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz()
+
+  @@map("address")
+}
+
+model AddressesInWallets {
+  Wallet    Wallet  @relation(fields: [walletId], references: [id])
+  walletId  BigInt  @map("wallet_id")
+  Address   Address @relation(fields: [addressId], references: [id])
+  addressId String  @map("address_id")
+
+  @@id([walletId, addressId])
+}

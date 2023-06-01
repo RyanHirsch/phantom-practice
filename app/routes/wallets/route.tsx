@@ -1,6 +1,6 @@
 import { Link, Outlet, useLoaderData } from "@remix-run/react";
 
-import { getWallets } from "~/utils/db.server";
+import { getWallets } from "~/utils/flat-db.server";
 
 import { Wallet } from "./types";
 

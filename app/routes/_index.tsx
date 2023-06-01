@@ -9,7 +9,7 @@ export const meta: V2_MetaFunction = () => {
 export default function Index() {
   return (
     <div className="text-lg">
-      <h1>Welcome to Remix</h1>
+      <h1>Welcome to FauxPhantom</h1>
       <ul>
         <li>
           <Link to="wallets">Wallets</Link>

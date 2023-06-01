@@ -13,6 +13,11 @@
         "ETH": "0x761e41a7010114e6b600F20F1e778171d3Cb0f9e",
         "MATIC": "0x761e41a7010114e6b600F20F1e778171d3Cb0f9e"
       }
+    },
+    {
+      "source": "imported",
+      "chain": "SOL",
+      "address": "asdfasdfasdfasdf"
     }
   ]
 }

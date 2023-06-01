@@ -1,21 +1,25 @@
 import { Form, useOutletContext } from "@remix-run/react";
 import classNames from "classnames";
-import { ActionArgs } from "@remix-run/node";
+import { ActionArgs, redirect } from "@remix-run/node";
+
+import { badRequest } from "~/utils/request.server";
+import { createWallet, getWallets } from "~/utils/flat-db.server";
 
 import { WalletContext } from "./wallets/route";
+import { Wallet } from "./wallets/types";
 
-function validateWalletName(name: string) {
-  if (name.length < 3) {
-    return "That wallet name is too short";
+function validateWalletName(name: string, existingNames: string[]) {
+  if (existingNames.includes(name)) {
+    return "That wallet name already taken";
   }
+  return null;
 }
 
 export async function action({ request }: ActionArgs) {
-  const userId = await requireUserId(request);
   const form = await request.formData();
-  const content = form.get("content");
-  const name = form.get("name");
-  if (typeof content !== "string" || typeof name !== "string") {
+  const pubKey = form.get("publicKey");
+  const name = form.get("displayName");
+  if (typeof pubKey !== "string" || typeof name !== "string") {
     return badRequest({
       fieldErrors: null,
       fields: null,
@@ -24,28 +28,37 @@ export async function action({ request }: ActionArgs) {
   }
 
   const fieldErrors = {
-    name: validateWalletName(name),
+    name: validateWalletName(
+      name,
+      getWallets("me")
+        .map((w) => w.displayName)
+        .filter(Boolean) as string[]
+    ),
   };
-  const fields = { content, name };
+  const wallet = {
+    source: "imported",
+    chain: "SOL",
+    address: pubKey,
+    ...(name ? { displayName: name } : undefined),
+  } satisfies Wallet;
+
   if (Object.values(fieldErrors).some(Boolean)) {
     return badRequest({
       fieldErrors,
-      fields,
+      fields: { name, pubKey },
       formError: null,
     });
   }
 
-  const joke = await db.joke.create({
-    data: { ...fields, jokesterId: userId },
-  });
-  return redirect(`/jokes/${joke.id}`);
+  createWallet("me", wallet);
+  return redirect(`/wallets/${wallet.address}`);
 }
 
 export default function NewWalletRoute() {
   const { wallets } = useOutletContext<WalletContext>();
 
   return (
-    <Form className="flex flex-col space-y-4 w-full">
+    <Form className="flex flex-col space-y-4 w-full" method="POST">
       <label htmlFor="displayName" className="flex flex-col mx-6">
         Name:
         <input id="displayName" type="text" name="displayName" className="w-full" />
