@@ -1,9 +1,10 @@
 import { LoaderArgs } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 
 import { getWallets } from "~/utils/flat-db.server";
 import { notFound } from "~/utils/request.server";
 import { getUser } from "~/utils/user.server";
+import { getSolBalance } from "~/utils/sol.server";
 
 import { Wallet } from "./wallets/types";
 
@@ -15,6 +16,10 @@ function findWallet(wallets: Array<Wallet>, address: string | undefined) {
   return wallets.find((x) =>
     x.source === "imported" ? address === x.address : Object.values(x.addresses).includes(address)
   );
+}
+
+function getSolAddress(wallet: Wallet) {
+  return wallet.source === "imported" ? wallet.address : wallet.addresses.SOL;
 }
 
 export async function loader({ params }: LoaderArgs) {
@@ -29,13 +34,14 @@ export async function loader({ params }: LoaderArgs) {
 
   return {
     selectedWallet,
+    balance: await getSolBalance(getSolAddress(selectedWallet)),
   };
 }
 
 // type FetchingState = "idle" | "loading" | "loaded" | "error" | "reloading";
 
 export default function WalletsWalletDetailsPage() {
-  const { selectedWallet } = useLoaderData<Awaited<ReturnType<typeof loader>>>();
+  const { selectedWallet, balance } = useLoaderData<Awaited<ReturnType<typeof loader>>>();
 
   // const params = useParams();
   // const [walletData, setWalletData] = useState<null | Wallet>(null);
@@ -68,7 +74,15 @@ export default function WalletsWalletDetailsPage() {
   return (
     <div>
       Hi from wallet details
-      <pre>{JSON.stringify(selectedWallet, null, 2)}</pre>
+      <pre>{JSON.stringify({ selectedWallet, balance }, null, 2)}</pre>
+    </div>
+  );
+}
+
+export function ErrorBoundary() {
+  return (
+    <div>
+      Failed to get that wallet, refresh or go back to <Link to="/wallets">all wallets</Link>
     </div>
   );
 }
